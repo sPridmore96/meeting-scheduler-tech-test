@@ -3,14 +3,17 @@ package org.example;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
 public class CheckMeetingCommands {
     private final String[] commands = new String[]{"Show Employee One Working day", "Show Employee Two Working day", "Show Available Meeting Times"};
     private final Scanner scanner = new Scanner(System.in);
+
     public void printCommands() {
         for (int i = 0; i < commands.length; i++) {
             System.out.println((i + 1) + " : " + commands[i]);
         }
     }
+
     public int getUserInt(int rangeLimit) {
         int input = 0;
         boolean isActive = true;
@@ -32,9 +35,9 @@ public class CheckMeetingCommands {
         }
         return input;
     }
+
     public void printHashMap(HashMap<Integer, Integer> givenHashMap) {
         TreeMap<Integer, Integer> sortedByStartTime = new TreeMap<>(givenHashMap);
-
         for (int i : sortedByStartTime.keySet()) {
             if (String.valueOf(i).length() == 4) {
                 String[] stringStartTime = Integer.toString(i).split("(?<=\\G..)");
@@ -52,6 +55,7 @@ public class CheckMeetingCommands {
             }
         }
     }
+
     public void compareMeetingSchedules(Employee employeeOne, Employee employeeTwo) {
         HashMap<Integer, Integer> combinedHashMap = new HashMap<>() {{
             putAll(employeeOne.getWorkingHours());
@@ -60,7 +64,6 @@ public class CheckMeetingCommands {
             putAll(employeeTwo.getCurrentMeetings());
         }};
         TreeMap<Integer, Integer> combTreeMap = new TreeMap<>(combinedHashMap);
-        List<Time> intervals = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
         ArrayList<Integer> allTimesArr = new ArrayList<>();
         for (Map.Entry<Integer, Integer> entry : combTreeMap.entrySet()) {
@@ -68,6 +71,7 @@ public class CheckMeetingCommands {
             allTimesArr.add(entry.getValue());
         }
         Collections.sort(allTimesArr);
+        List<Time> intervals = new ArrayList<>();
         for (int i = 0; i < allTimesArr.size(); i++) {
             Integer start = allTimesArr.get(i);
             Integer end = allTimesArr.get(i + 1);
@@ -75,17 +79,15 @@ public class CheckMeetingCommands {
             String[] startOfMeetingArr = start.toString().split("");
             String[] endOfMeetingArr = end.toString().split("");
             if (startOfMeetingArr.length == 4) {
-                int startTime = Integer.parseInt(startOfMeetingArr[0] + startOfMeetingArr[1]);
-                int finishTime = Integer.parseInt(endOfMeetingArr[0] + endOfMeetingArr[1]);
-                Time meetingStartTime = new Time(startTime, Integer.parseInt(startOfMeetingArr[2] + startOfMeetingArr[3]) - 15, 0);
-                Time meetingFinishTime = new Time(finishTime, Integer.parseInt(endOfMeetingArr[2] + startOfMeetingArr[3]) - 15, 0);
+                Time meetingStartTime = new Time(Integer.parseInt(startOfMeetingArr[0] + startOfMeetingArr[1]), Integer.parseInt(startOfMeetingArr[2] + startOfMeetingArr[3]) - 15, 0);
+                Time meetingFinishTime = new Time(Integer.parseInt(endOfMeetingArr[0] + endOfMeetingArr[1]), Integer.parseInt(endOfMeetingArr[2] + startOfMeetingArr[3]) - 15, 0);
                 calendar.setTime(meetingStartTime);
                 while (calendar.getTime().before(meetingFinishTime)) {
                     calendar.add(Calendar.MINUTE, 15);
                     intervals.add(new Time(calendar.getTimeInMillis()));
                 }
             } else if (startOfMeetingArr.length == 3 && endOfMeetingArr.length == 3) {
-                Time meetingStartTime = new Time(Integer.parseInt(startOfMeetingArr[0]), Integer.parseInt(startOfMeetingArr[1]) - 15,0);
+                Time meetingStartTime = new Time(Integer.parseInt(startOfMeetingArr[0]), Integer.parseInt(startOfMeetingArr[1]) - 15, 0);
                 Time meetingFinishTime = new Time(Integer.parseInt(endOfMeetingArr[0]), Integer.parseInt(endOfMeetingArr[1]) - 15, 0);
                 calendar.setTime(meetingStartTime);
                 while (calendar.getTime().before(meetingFinishTime)) {
@@ -93,9 +95,8 @@ public class CheckMeetingCommands {
                     intervals.add(new Time(calendar.getTimeInMillis()));
                 }
             } else {
-                int finishTime = Integer.parseInt(endOfMeetingArr[0] + endOfMeetingArr[1]);
                 Time meetingStartTime = new Time(Integer.parseInt(startOfMeetingArr[0]), Integer.parseInt(startOfMeetingArr[1]) - 15, 0);
-                Time meetingFinishTime = new Time(finishTime, Integer.parseInt(endOfMeetingArr[2]  + endOfMeetingArr[3]) - 15, 0);
+                Time meetingFinishTime = new Time(Integer.parseInt(endOfMeetingArr[0] + endOfMeetingArr[1]), Integer.parseInt(endOfMeetingArr[2] + endOfMeetingArr[3]) - 15, 0);
                 calendar.setTime(meetingStartTime);
                 while (calendar.getTime().before(meetingFinishTime)) {
                     calendar.add(Calendar.MINUTE, 15);
@@ -108,6 +109,7 @@ public class CheckMeetingCommands {
             System.out.println(simpleDateFormat.format(time));
         }
     }
+
     public void runCommands(Employee employeeOne, Employee employeeTwo) {
         printCommands();
         int userIntInput = getUserInt(3);
